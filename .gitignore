@@ -28,7 +28,6 @@
 *.exe
 *.out
 *.app
-
-.vs/*
-x64/*
-MyLittleMoteur/x64/*
+/.vs
+/x64
+/MyLittleMoteur/x64
