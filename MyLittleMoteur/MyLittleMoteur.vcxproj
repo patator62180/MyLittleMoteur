@@ -145,13 +145,15 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Shader.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Shader.h" />
+    <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shader\shader.fs" />
     <None Include="..\shader\shader.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\inlcude\Shader.h" />
+    <ClInclude Include="..\inlcude\stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
