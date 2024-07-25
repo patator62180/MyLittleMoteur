@@ -151,6 +151,8 @@
   <ItemGroup>
     <None Include="..\shader\shader.fs" />
     <None Include="..\shader\shader.vs" />
+    <None Include="lightShader.fs" />
+    <None Include="lightShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\inlcude\glad\glad.h" />

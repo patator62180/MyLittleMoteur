@@ -6,6 +6,8 @@ in vec2 TexCoord;
 uniform sampler2D texture1;
 uniform sampler2D texture2;
 uniform float time;
+uniform vec3 color;
+uniform vec3 lightColor;
 
 vec2 rotate(vec2 v, float a) {
 	float s = sin(a);
@@ -17,4 +19,5 @@ vec2 rotate(vec2 v, float a) {
 void main()
 {
     FragColor =  mix(texture(texture1, TexCoord), texture(texture2, TexCoord), abs(sin(time)));
+	FragColor = vec4(lightColor*color, 1.0) * FragColor;
 }

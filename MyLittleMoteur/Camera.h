@@ -25,7 +25,7 @@ public:
 	void ProcessMouseMovement(float xoffset, float yoffset);
 	void ProcessMouseScroll(float yoffset);
 private:
-	const float cameraSpeed = 0.5f;
+	const float cameraSpeed = 5.0f;
 	const float mouseSensitivity = 0.1f;
 	const float minZoom = 1.0f;
 	const float maxZoom = 45.0f;

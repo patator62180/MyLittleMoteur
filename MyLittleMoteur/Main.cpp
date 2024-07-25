@@ -62,11 +62,6 @@ float vertices[] = {
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
-unsigned int indices[] = {  // note that we start from 0!
-    0, 1, 3,   // first triangle
-    1, 2, 3    // second triangle
-};
-
 glm::vec3 cubePositions[] = {
     glm::vec3(0.0f,  0.0f,  0.0f),
     glm::vec3(2.0f,  5.0f, -15.0f),
@@ -149,7 +144,8 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    Shader ourShader("../shader/shader.vs", "../shader/shader.fs");
+    Shader objectShader("../shader/shader.vs", "../shader/shader.fs");
+    Shader lightShader("../shader/lightShader.vs", "../shader/lightShader.fs");
 
     unsigned int VAO;
     glGenVertexArrays(1, &VAO); 
@@ -165,12 +161,6 @@ int main() {
     // texture coord attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-
-    //unsigned int EBO;
-    //glGenBuffers(1, &EBO);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_DEPTH_TEST);
@@ -235,6 +225,17 @@ int main() {
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
+    unsigned int lightVAO;
+    glGenVertexArrays(1, &lightVAO);
+    glBindVertexArray(lightVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    auto lightModel = glm::mat4(1.0f);
+    lightModel = glm::translate(lightModel, glm::vec3(1.2f, 1.0f, 2.0f));
+    lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+
     while (!glfwWindowShouldClose(window))
     {
         float currentTime = glfwGetTime();
@@ -247,29 +248,35 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 
-        ourShader.use(); 
-        ourShader.setInt("texture1", 0); 
-        ourShader.setInt("texture2", 1);
-        ourShader.setFloat("time", (float) glfwGetTime());
-        ourShader.SetMat4("transform", trans);
-        ourShader.SetMat4("model", model);
-        ourShader.SetMat4("view", camera.GetLookAt());
-        ourShader.SetMat4("projection", camera.GetProjection());
+        objectShader.use(); 
+        objectShader.setInt("texture1", 0); 
+        objectShader.setInt("texture2", 1);
+        objectShader.setFloat("time", (float) glfwGetTime());
+        objectShader.SetMat4("transform", trans);
+        objectShader.SetMat4("model", model);
+        objectShader.SetMat4("view", camera.GetLookAt());
+        objectShader.SetMat4("projection", camera.GetProjection());
+        objectShader.setVec3("color", 1.0f, 0.5f, 0.31f);
+        objectShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 
         glBindVertexArray(VAO);
-        int i = 0;
         for (glm::vec3 position : cubePositions)
         {
             auto translate = glm::translate(glm::mat4(1.0f), position);
-
-            if (i % 3 == 0) {
-                //translate = glm::rotate(translate, 100.0f*glm::radians((float)glfwGetTime()), glm::vec3(1.0, 0.0, 0.0));                
-            }
-            ourShader.SetMat4("model", translate);
+            objectShader.SetMat4("model", translate);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
-            i++;
         }
+
+        //Draw light
+        lightShader.use();
+        objectShader.SetMat4("transform", glm::mat4(1.0f));
+        objectShader.SetMat4("model", lightModel);
+        objectShader.SetMat4("view", camera.GetLookAt());
+        objectShader.SetMat4("projection", camera.GetProjection());
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();

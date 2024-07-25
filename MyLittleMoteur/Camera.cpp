@@ -65,11 +65,9 @@ glm::mat4 Camera::GetProjection()
 
 void Camera::UpdateValues()
 {
-	glm::mat4 yawRotation = glm::rotate(glm::mat4(1.0), glm::radians(yaw), glm::vec3(0.0, 1.0, 0.0));
+	glm::mat4 yawRotation = glm::rotate(glm::mat4(1.0), glm::radians(-yaw), glm::vec3(0.0, 1.0, 0.0));
 	glm::mat4 pitchRotation = glm::rotate(glm::mat4(1.0), glm::radians(pitch), glm::vec3(-1.0, 0.0, 0.0));
 	forward = yawRotation * pitchRotation * glm::vec4(0.0, 0.0, -1.0, 1.0);
-	std::cout << yaw << " " << pitch << std::endl;
-	DebugVec3(forward);
 	left = -glm::cross(forward, world_up);
 	left = glm::normalize(left);
 	up = glm::cross(forward, left);
@@ -97,7 +95,6 @@ void Camera::ProcessInput(GLFWwindow* window, float deltaTime)
 // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
 void Camera::ProcessMouseMovement(float xoffset, float yoffset)
 {
-	std::cout << xoffset << " " << yoffset << std::endl;
 	xoffset *= mouseSensitivity;
 	yoffset *= mouseSensitivity;
 
@@ -116,6 +113,5 @@ void Camera::ProcessMouseScroll(float yoffset)
 {
 	zoom -= (float)yoffset;
 	zoom = glm::max(minZoom, glm::min(zoom, maxZoom));
-	std::cout << zoom << std::endl;
 	UpdateValues();
 }
