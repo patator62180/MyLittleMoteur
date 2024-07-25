@@ -1,5 +1,7 @@
 #include "Camera.h"
 #include <glm/ext/matrix_transform.hpp>
+#include <iostream>
+#include <glm/ext/matrix_clip_space.hpp>
 
 Camera::Camera()
 {
@@ -10,7 +12,7 @@ Camera::Camera()
 	forward = glm::vec3(0.0, 0.0, -1.0);
 	up = glm::vec3(0.0, 1.0, 0.0);
 	left = glm::vec3(-1.0, 0.0, 0.0);
-
+	zoom = 45;
 }
 
 void Camera::Rotate(float pitch, float yaw, float roll)
@@ -56,20 +58,64 @@ glm::mat4 Camera::GetLookAt()
 	return glm::lookAt(Position, Position + forward, up);
 }
 
+glm::mat4 Camera::GetProjection()
+{
+	return glm::perspective(glm::radians(zoom), 800.0f / 600.0f, 0.1f, 100.0f);
+}
+
 void Camera::UpdateValues()
 {
-	//TODO
+	glm::mat4 yawRotation = glm::rotate(glm::mat4(1.0), glm::radians(yaw), glm::vec3(0.0, 1.0, 0.0));
+	glm::mat4 pitchRotation = glm::rotate(glm::mat4(1.0), glm::radians(pitch), glm::vec3(-1.0, 0.0, 0.0));
+	forward = yawRotation * pitchRotation * glm::vec4(0.0, 0.0, -1.0, 1.0);
+	std::cout << yaw << " " << pitch << std::endl;
+	DebugVec3(forward);
+	left = -glm::cross(forward, world_up);
+	left = glm::normalize(left);
+	up = glm::cross(forward, left);
+}
+
+void Camera::DebugVec3(glm::vec3 vector) 
+{
+	std::cout << vector.x << " ; " << vector.y << " ; " << vector.z << std::endl;
 }
 
 
-void Camera::ProcessInput(GLFWwindow* window)
+void Camera::ProcessInput(GLFWwindow* window, float deltaTime)
 {
+	auto factor = deltaTime * cameraSpeed;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		Position += cameraSpeed * forward;
+		Position += factor * forward;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		Position -= cameraSpeed * forward;
+		Position -= factor * forward;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		Position += left * cameraSpeed;
+		Position += factor * left;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		Position -= left * cameraSpeed;
+		Position -= factor * left;
+}
+
+// processes input received from a mouse input system. Expects the offset value in both the x and y direction.
+void Camera::ProcessMouseMovement(float xoffset, float yoffset)
+{
+	std::cout << xoffset << " " << yoffset << std::endl;
+	xoffset *= mouseSensitivity;
+	yoffset *= mouseSensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	// make sure that when pitch is out of bounds, screen doesn't get flipped
+	pitch = glm::max(-89.0f, glm::min(pitch, 89.0f));
+
+	// update Front, Right and Up Vectors using the updated Euler angles
+	UpdateValues();
+}
+
+// processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
+void Camera::ProcessMouseScroll(float yoffset)
+{
+	zoom -= (float)yoffset;
+	zoom = glm::max(minZoom, glm::min(zoom, maxZoom));
+	std::cout << zoom << std::endl;
+	UpdateValues();
 }

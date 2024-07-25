@@ -19,10 +19,17 @@ public:
 	glm::vec3 GetLeft();
 
 	glm::mat4 GetLookAt();
+	glm::mat4 GetProjection();
 
-	void ProcessInput(GLFWwindow* window);
+	void ProcessInput(GLFWwindow* window, float deltaTime);
+	void ProcessMouseMovement(float xoffset, float yoffset);
+	void ProcessMouseScroll(float yoffset);
 private:
-	const float cameraSpeed = 0.005f;
+	const float cameraSpeed = 0.5f;
+	const float mouseSensitivity = 0.1f;
+	const float minZoom = 1.0f;
+	const float maxZoom = 45.0f;
+	const glm::vec3 world_up = glm::vec3(0.0, 1.0, 0.0);
 
 	glm::vec3 forward;
 	glm::vec3 left;
@@ -32,5 +39,8 @@ private:
 	float yaw;
 	float roll;
 
+	float zoom;
+
 	void UpdateValues();
+	void DebugVec3(glm::vec3 vector);
 };
