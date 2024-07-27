@@ -45,7 +45,7 @@
     <None Include="lightShader.vs">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="lightShader.fs">
+    <None Include="..\shader\lightShader.fs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
