@@ -312,6 +312,7 @@ int main() {
         objectShader.setVec3("color", 1.0f, 0.5f, 0.31f);
         objectShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
         objectShader.setVec3("lightPosition", lightPosition.x, lightPosition.y, lightPosition.z);
+        objectShader.setVec3("viewPosition", camera.Position.x, camera.Position.y, camera.Position.z);
 
         glBindVertexArray(VAO);
         for (glm::vec3 position : cubePositions)
