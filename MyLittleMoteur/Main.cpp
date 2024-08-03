@@ -274,6 +274,7 @@ int main() {
 
     auto lightOrigin = glm::vec3(0.0f, 0.0f, 1.0f);
     auto lightPosition = lightOrigin;
+    auto lightColor = glm::vec3();
 
     while (!glfwWindowShouldClose(window))
     {
@@ -284,6 +285,9 @@ int main() {
         processInput(window, camera);
 
         lightPosition = lightOrigin + glm::vec3(5 * sin(glfwGetTime()),0.0,0.0);
+        lightColor.x = sin(glfwGetTime() * 2.0f);
+        lightColor.y = sin(glfwGetTime() * 0.7f);
+        lightColor.z = sin(glfwGetTime() * 1.3f);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
@@ -294,10 +298,12 @@ int main() {
         lightModel = glm::scale(lightModel, glm::vec3(0.2f));
 
         lightShader.use();
-        lightShader.SetMat4("transform", glm::mat4(1.0f));
-        lightShader.SetMat4("model", lightModel);
-        lightShader.SetMat4("view", camera.GetLookAt());
-        lightShader.SetMat4("projection", camera.GetProjection());
+        lightShader.setMat4("transform", glm::mat4(1.0f));
+        lightShader.setMat4("model", lightModel);
+        lightShader.setMat4("view", camera.GetLookAt());
+        lightShader.setMat4("projection", camera.GetProjection());
+        lightShader.setVec3("lightColor", lightColor);
+
 
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -307,19 +313,29 @@ int main() {
         objectShader.setInt("texture1", 0); 
         objectShader.setInt("texture2", 1);
         objectShader.setFloat("time", (float) glfwGetTime());
-        objectShader.SetMat4("transform", trans);
-        objectShader.SetMat4("view", camera.GetLookAt());
-        objectShader.SetMat4("projection", camera.GetProjection());
-        objectShader.setVec3("color", 1.0f, 0.5f, 0.31f);
-        objectShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        objectShader.setVec3("lightPosition", lightPosition.x, lightPosition.y, lightPosition.z);
+        objectShader.setMat4("transform", trans);
+        objectShader.setMat4("view", camera.GetLookAt());
+        objectShader.setMat4("projection", camera.GetProjection());
         objectShader.setVec3("viewPosition", camera.Position.x, camera.Position.y, camera.Position.z);
+        //material
+        objectShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+        objectShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+        objectShader.setVec3("material.specular", 1.0f, 0.5f, 0.31f);
+        objectShader.setFloat("material.shininess", 32.0f);
+        //light
+        glm::vec3 diffuseColor = 0.5f * lightColor;
+        glm::vec3 ambientColor = 0.2f * diffuseColor;
+
+        objectShader.setVec3("light.ambient", ambientColor);
+        objectShader.setVec3("light.diffuse", diffuseColor);
+        objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+        objectShader.setVec3("light.position", lightPosition);
 
         glBindVertexArray(VAO);
         for (glm::vec3 position : cubePositions)
         {
             auto translate = glm::translate(glm::mat4(1.0f), position);
-            objectShader.SetMat4("model", translate);
+            objectShader.setMat4("model", translate);
             
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
