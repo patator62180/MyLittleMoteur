@@ -199,7 +199,7 @@ int main() {
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
     //normal attribute
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -249,7 +249,7 @@ int main() {
     glBindTexture(GL_TEXTURE_2D, texture2);
 
     glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::rotate(trans, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    //trans = glm::rotate(trans, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -272,7 +272,8 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    auto lightOrigin = glm::vec3(1.2f, 1.0f, 2.0f);
+    auto lightOrigin = glm::vec3(0.0f, 0.0f, 1.0f);
+    auto lightPosition = lightOrigin;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -282,12 +283,13 @@ int main() {
 
         processInput(window, camera);
 
+        lightPosition = lightOrigin + glm::vec3(5 * sin(glfwGetTime()),0.0,0.0);
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
         glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 
         //Draw light
-        auto lightPosition = lightOrigin + glm::vec3(5.0 * glm::sin(glfwGetTime()), 0.0, 0.0);
         auto lightModel = glm::translate(glm::mat4(1.0), lightPosition);
         lightModel = glm::scale(lightModel, glm::vec3(0.2f));
 
@@ -306,7 +308,6 @@ int main() {
         objectShader.setInt("texture2", 1);
         objectShader.setFloat("time", (float) glfwGetTime());
         objectShader.SetMat4("transform", trans);
-        objectShader.SetMat4("model", model);
         objectShader.SetMat4("view", camera.GetLookAt());
         objectShader.SetMat4("projection", camera.GetProjection());
         objectShader.setVec3("color", 1.0f, 0.5f, 0.31f);
@@ -319,7 +320,7 @@ int main() {
         {
             auto translate = glm::translate(glm::mat4(1.0f), position);
             objectShader.SetMat4("model", translate);
-
+            
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 

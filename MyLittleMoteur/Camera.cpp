@@ -8,19 +8,10 @@ Camera::Camera()
 	Position = glm::vec3(0.0, 0.0, 3.0);
 	pitch = 0;
 	yaw = 0;
-	roll = 0;
 	forward = glm::vec3(0.0, 0.0, -1.0);
 	up = glm::vec3(0.0, 1.0, 0.0);
 	left = glm::vec3(-1.0, 0.0, 0.0);
 	zoom = 45;
-}
-
-void Camera::Rotate(float pitch, float yaw, float roll)
-{
-	this->pitch += pitch;
-	this->yaw += yaw;
-	this->roll += roll;
-	UpdateValues();
 }
 
 float Camera::GetPitch()
@@ -31,11 +22,6 @@ float Camera::GetPitch()
 float Camera::GetYaw()
 {
 	return yaw;
-}
-
-float Camera::GetRoll() 
-{
-	return roll;
 }
 
 glm::vec3 Camera::GetForward()
@@ -65,9 +51,9 @@ glm::mat4 Camera::GetProjection()
 
 void Camera::UpdateValues()
 {
-	glm::mat4 yawRotation = glm::rotate(glm::mat4(1.0), glm::radians(-yaw), glm::vec3(0.0, 1.0, 0.0));
-	glm::mat4 pitchRotation = glm::rotate(glm::mat4(1.0), glm::radians(pitch), glm::vec3(-1.0, 0.0, 0.0));
-	forward = yawRotation * pitchRotation * glm::vec4(0.0, 0.0, -1.0, 1.0);
+	glm::mat4 rotation = glm::rotate(glm::mat4(1.0), glm::radians(yaw), -world_up);
+	rotation = glm::rotate(rotation, glm::radians(pitch), world_right);
+	forward = rotation * glm::vec4(-world_forward, 1.0);
 	left = -glm::cross(forward, world_up);
 	left = glm::normalize(left);
 	up = glm::cross(forward, left);
@@ -90,6 +76,10 @@ void Camera::ProcessInput(GLFWwindow* window, float deltaTime)
 		Position += factor * left;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		Position -= factor * left;
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		Position += factor * up;
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		Position -= factor * up;
 }
 
 // processes input received from a mouse input system. Expects the offset value in both the x and y direction.

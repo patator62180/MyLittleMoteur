@@ -8,11 +8,8 @@ public:
 
 	glm::vec3 Position;
 
-	void Rotate(float pitch, float yaw, float roll);
-
 	float GetPitch();
 	float GetYaw();
-	float GetRoll();
 
 	glm::vec3 GetForward();
 	glm::vec3 GetUp();
@@ -30,6 +27,8 @@ private:
 	const float minZoom = 1.0f;
 	const float maxZoom = 45.0f;
 	const glm::vec3 world_up = glm::vec3(0.0, 1.0, 0.0);
+	const glm::vec3 world_right = glm::vec3(1.0, 0.0, 0.0);
+	const glm::vec3 world_forward = glm::vec3(0.0, 0.0, 1.0);
 
 	glm::vec3 forward;
 	glm::vec3 left;
@@ -37,7 +36,6 @@ private:
 
 	float pitch;
 	float yaw;
-	float roll;
 
 	float zoom;
 

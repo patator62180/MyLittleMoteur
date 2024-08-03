@@ -27,13 +27,14 @@ void main()
 
 	vec3 ambient = 0.1 * lightColor;
 
+	vec3 norm = normalize(Normal);
 	vec3 lightDirection = normalize(lightPosition - FragPos);
-	vec3 diffuse = max(dot(lightDirection, Normal), 0.0) * lightColor;
+	vec3 diffuse = max(dot(lightDirection, norm), 0.0) * lightColor;
  
 	vec3 viewDirection = normalize(viewPosition - FragPos);
-	vec3 reflectDirection = reflect(-lightDirection, Normal);
+	vec3 reflectDirection = reflect(-lightDirection, norm);
 	float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), 32);
-	vec3 specular = 0.5 * spec * lightColor;  
+	vec3 specular = 0.5 * spec * lightColor;
 
 	FragColor = vec4((ambient + diffuse + specular)*color, 1.0);
 }
