@@ -117,39 +117,25 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
-
-void setupDebugNormals()
+void setup_texture(const char* path, GLenum textureId = GL_TEXTURE0) 
 {
-    for (int i = 0; i < 36; i++)
+    unsigned int texture;
+    int width, height, nrChannels;
+    glGenTextures(1, &texture);
+    glActiveTexture(textureId);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+    if (data)
     {
-        auto indice = i * 8;
-        auto indiceDebug = i * 6;
-        debugVertices[indiceDebug + 0] = vertices[indice];
-        debugVertices[indiceDebug + 1] = vertices[indice] + vertices[indice + 5];
-        debugVertices[indiceDebug + 2] = vertices[indice + 1];
-        debugVertices[indiceDebug + 3] = vertices[indice + 1] + vertices[indice + 6];
-        debugVertices[indiceDebug + 4] = vertices[indice + 2];
-        debugVertices[indiceDebug + 5] = vertices[indice + 2] + vertices[indice + 7];
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
     }
-
-    unsigned int debugVBO;
-    glGenBuffers(1, &debugVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, debugVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(debugVertices), debugVertices, GL_STATIC_DRAW);
-
-    unsigned int debugVAO;
-    glGenVertexArrays(1, &debugVAO);
-    glBindVertexArray(debugVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, debugVBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-}
-
-void debugNormals()
-{
-    glDrawArrays(GL_LINE, 0, 72);
+    else
+    {
+        std::cout << "Failed to load texture at path : " << path << std::endl;
+    }
+    stbi_image_free(data);
 }
 
 int main() {
@@ -205,48 +191,13 @@ int main() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_DEPTH_TEST);
 
-    unsigned int texture1;
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load("../texture/container.jpg", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture 1" << std::endl;
-    }
-    stbi_image_free(data);
-
-    unsigned int texture2;
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-    data = stbi_load("../texture/awesomeface.png", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture 2" << std::endl;
-    }
-    stbi_image_free(data);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture2);
+    setup_texture("../texture/container2.png");
+    setup_texture("../texture/container2_specular.png", GL_TEXTURE1);
 
     glm::mat4 trans = glm::mat4(1.0f);
     //trans = glm::rotate(trans, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -274,7 +225,7 @@ int main() {
 
     auto lightOrigin = glm::vec3(0.0f, 0.0f, 1.0f);
     auto lightPosition = lightOrigin;
-    auto lightColor = glm::vec3();
+    auto lightColor = glm::vec3(1.0f);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -284,14 +235,14 @@ int main() {
 
         processInput(window, camera);
 
-        lightPosition = lightOrigin + glm::vec3(5 * sin(glfwGetTime()),0.0,0.0);
-        lightColor.x = sin(glfwGetTime() * 2.0f);
-        lightColor.y = sin(glfwGetTime() * 0.7f);
-        lightColor.z = sin(glfwGetTime() * 1.3f);
+        lightPosition = lightOrigin + 2.0f * glm::vec3(sin(glfwGetTime()), 0.0f, 0.0f);
+        //lightColor.x = sin(glfwGetTime() * 2.0f);
+        //lightColor.y = sin(glfwGetTime() * 0.7f);
+        //lightColor.z = sin(glfwGetTime() * 1.3f);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-        glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //Draw light
         auto lightModel = glm::translate(glm::mat4(1.0), lightPosition);
@@ -304,23 +255,18 @@ int main() {
         lightShader.setMat4("projection", camera.GetProjection());
         lightShader.setVec3("lightColor", lightColor);
 
-
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
-
         //draw objects
-        objectShader.use(); 
-        objectShader.setInt("texture1", 0); 
-        objectShader.setInt("texture2", 1);
+        objectShader.use();
         objectShader.setFloat("time", (float) glfwGetTime());
         objectShader.setMat4("transform", trans);
         objectShader.setMat4("view", camera.GetLookAt());
         objectShader.setMat4("projection", camera.GetProjection());
         objectShader.setVec3("viewPosition", camera.Position.x, camera.Position.y, camera.Position.z);
         //material
-        objectShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
-        objectShader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
-        objectShader.setVec3("material.specular", 1.0f, 0.5f, 0.31f);
+        objectShader.setInt("material.diffuse", 0);
+        objectShader.setInt("material.specular", 1);
         objectShader.setFloat("material.shininess", 32.0f);
         //light
         glm::vec3 diffuseColor = 0.5f * lightColor;
