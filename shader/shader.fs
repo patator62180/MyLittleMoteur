@@ -5,9 +5,18 @@ struct Material {
     float shininess;
 }; 
 
-struct Light {
-    vec3 position;
+struct DirLight {
+	bool enabled;
 	vec3 direction;
+  
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+struct PointLight {
+	bool enabled;
+    vec3 position;
   
     vec3 ambient;
     vec3 diffuse;
@@ -15,6 +24,16 @@ struct Light {
 
 	float attenuationLinear;
 	float attenuationQuad;
+}; 
+
+struct SpotLight {
+	bool enabled;
+    vec3 position;
+	vec3 direction;
+  
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
 
 	float cutOff;
 	float blend;
@@ -29,12 +48,21 @@ in vec3 FragPos;
 uniform float time;
 uniform vec3 viewPosition;
 uniform Material material;
-uniform Light light;
+
+#define NB_LIGHTS 4
+uniform DirLight dirLights[NB_LIGHTS];
+uniform PointLight pointLights[NB_LIGHTS];
+uniform SpotLight spotLights[NB_LIGHTS];
 
 
 
-vec4 computeDirectionnalLight()
+vec4 computeDirectionnalLight(int index)
 {
+	DirLight light = dirLights[index];
+	if(!light.enabled)
+	{
+		return vec4(0.0);
+	}
 	vec3 ambient = vec3(texture(material.diffuse, TexCoord)) * light.ambient;
 
 	vec3 norm = normalize(Normal);
@@ -49,8 +77,12 @@ vec4 computeDirectionnalLight()
 	return vec4(ambient + diffuse + specular, 1.0);
 }
 
-vec4 computePointLight()
-{
+vec3 computePointLight(PointLight light)
+{	
+	if(!light.enabled)
+	{
+		return vec3(0.0);
+	}
 	vec3 ambient = vec3(texture(material.diffuse, TexCoord)) * light.ambient;
 	
 	vec3 lightDirection = normalize(light.position - FragPos);
@@ -66,11 +98,16 @@ vec4 computePointLight()
 	float distance = length(light.position - FragPos);
 	float attenuation = 1.0 / ( 1.0 + light.attenuationLinear * distance + light.attenuationQuad * distance * distance);
 
-	return vec4(attenuation * (ambient + diffuse + specular), 1.0);
+	return vec3(attenuation * (ambient + diffuse + specular));
 }
 
-vec4 computeSpotLight()
-{
+vec4 computeSpotLight(int index)
+{	
+	SpotLight light = spotLights[index];
+	if(!light.enabled)
+	{
+		return vec4(0.0);
+	}
 	vec3 ambient = vec3(texture(material.diffuse, TexCoord)) * light.ambient;
 	
 	vec3 lightDirection = normalize(light.position - FragPos);
@@ -99,5 +136,10 @@ vec4 computeSpotLight()
 
 void main()
 {
-	FragColor = computeSpotLight();
+	vec3 result = vec3(0.0);
+	for(int i = 0; i < NB_LIGHTS ; i++)
+	{		
+		result += computePointLight(pointLights[i]);
+	}
+	FragColor = vec4(result, 1.0);
 }
