@@ -84,6 +84,13 @@ glm::vec3 pointLightPositions[] = {
     glm::vec3(0.0f,  0.0f, -3.0f)
 };
 
+glm::vec3 pointLightColors[] = {
+    glm::vec3(0.7f,  0.2f,  1.0f),
+    glm::vec3(1.0f, 0.0f, 0.0f),
+    glm::vec3(0.0f,  1.0f, 0.0f),
+    glm::vec3(0.8f,  0.8f, 0.8f)
+};
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -249,6 +256,7 @@ int main() {
         for (int i = 0; i <= pointLightPositions->length(); i++)
         {
             lightPosition = pointLightPositions[i];
+            lightColor = pointLightColors[i];
 
             auto lightModel = glm::translate(glm::mat4(1.0), lightPosition);
             lightModel = glm::scale(lightModel, glm::vec3(0.2f));
@@ -264,16 +272,17 @@ int main() {
 
             glm::vec3 diffuseColor = 0.8f * lightColor;
             glm::vec3 ambientColor = 0.2f * diffuseColor;
+            float range = 80.0f;
 
             auto strLight = "pointLights[" + std::to_string(i) + "]";
-            std::cout << strLight + ".enabled " << std::endl;
+            objectShader.use();
             objectShader.setBool(strLight + ".enabled", true);
             objectShader.setVec3(strLight + ".ambient", ambientColor);
             objectShader.setVec3(strLight + ".diffuse", diffuseColor);
             objectShader.setVec3(strLight + ".specular", 1.0f, 1.0f, 1.0f);
             objectShader.setVec3(strLight + ".position", lightPosition);
-            objectShader.setFloat(strLight + ".attenuationLinear", 0.09f);
-            objectShader.setFloat(strLight + ".attenuationQuad", 0.032f);
+            objectShader.setFloat(strLight + ".attenuationLinear", 4.5f / range);
+            objectShader.setFloat(strLight + ".attenuationQuad", 75.0f / (range * range));
         }
 
         //draw objects
