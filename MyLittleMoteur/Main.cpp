@@ -235,7 +235,7 @@ int main() {
 
         processInput(window, camera);
 
-        lightPosition = lightOrigin + 2.0f * glm::vec3(sin(glfwGetTime()), 0.0f, 0.0f);
+        lightPosition = lightOrigin;// +2.0f * glm::vec3(sin(glfwGetTime()), 0.0f, 0.0f);
         //lightColor.x = sin(glfwGetTime() * 2.0f);
         //lightColor.y = sin(glfwGetTime() * 0.7f);
         //lightColor.z = sin(glfwGetTime() * 1.3f);
@@ -269,14 +269,19 @@ int main() {
         objectShader.setInt("material.specular", 1);
         objectShader.setFloat("material.shininess", 32.0f);
         //light
-        glm::vec3 diffuseColor = 0.5f * lightColor;
+        glm::vec3 diffuseColor = 0.8f * lightColor;
         glm::vec3 ambientColor = 0.2f * diffuseColor;
 
         objectShader.setVec3("light.ambient", ambientColor);
         objectShader.setVec3("light.diffuse", diffuseColor);
         objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
         objectShader.setVec3("light.position", lightPosition);
-
+        objectShader.setVec3("light.direction", -0.0f, -0.0f, -1.0f);
+        objectShader.setFloat("light.attenuationLinear", 0.09f);
+        objectShader.setFloat("light.attenuationQuad", 0.032f);
+        objectShader.setFloat("light.cutOff", glm::radians(35.0f));
+        objectShader.setFloat("light.blend", 0.2);
+    
         glBindVertexArray(VAO);
         for (glm::vec3 position : cubePositions)
         {
