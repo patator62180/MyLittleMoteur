@@ -6,8 +6,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include "Shader.h"
 #include "Camera.h"
+#include "Model.h"
 #include "stb_image.h"
 
 
@@ -130,27 +134,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
-void setup_texture(const char* path, GLenum textureId = GL_TEXTURE0) 
-{
-    unsigned int texture;
-    int width, height, nrChannels;
-    glGenTextures(1, &texture);
-    glActiveTexture(textureId);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture at path : " << path << std::endl;
-    }
-    stbi_image_free(data);
-}
-
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -175,42 +158,11 @@ int main() {
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
     Shader objectShader("../shader/shader.vs", "../shader/shader.fs");
     Shader lightShader("../shader/lightShader.vs", "../shader/lightShader.fs");
 
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO); 
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    //normal attribute
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glEnable(GL_DEPTH_TEST);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    setup_texture("../texture/container2.png");
-    setup_texture("../texture/container2_specular.png", GL_TEXTURE1);
 
     glm::mat4 trans = glm::mat4(1.0f);
     //trans = glm::rotate(trans, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -229,16 +181,23 @@ int main() {
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
+    
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices[0], GL_STATIC_DRAW);
+
     unsigned int lightVAO;
     glGenVertexArrays(1, &lightVAO);
     glBindVertexArray(lightVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     auto lightOrigin = glm::vec3(0.0f, 0.0f, 1.0f);
     auto lightPosition = lightOrigin;
     auto lightColor = glm::vec3(1.0f);
+
+    Model modelTest("../model/Backpack/backpack.obj");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -249,7 +208,7 @@ int main() {
         processInput(window, camera);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
+        
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //Draw light
@@ -297,7 +256,7 @@ int main() {
         objectShader.setInt("material.specular", 1);
         objectShader.setFloat("material.shininess", 32.0f);
     
-        glBindVertexArray(VAO);
+        //glBindVertexArray(VAO);
         for (glm::vec3 position : cubePositions)
         {
             auto translate = glm::translate(glm::mat4(1.0f), position);
@@ -305,6 +264,8 @@ int main() {
             
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+
+        modelTest.Draw(objectShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
