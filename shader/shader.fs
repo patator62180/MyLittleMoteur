@@ -1,5 +1,4 @@
 #version 330 core
-
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
@@ -46,19 +45,18 @@ in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragPos;
 
-#define NB_LIGHTS 4
-#define NB_MATERIALS 3
-
 uniform float time;
 uniform vec3 viewPosition;
-uniform Material materials[NB_MATERIALS];
+uniform Material material;
 
+#define NB_LIGHTS 4
 uniform DirLight dirLights[NB_LIGHTS];
 uniform PointLight pointLights[NB_LIGHTS];
 uniform SpotLight spotLights[NB_LIGHTS];
 
 
-vec4 computeDirectionnalLight(int index, Material material)
+
+vec4 computeDirectionnalLight(int index)
 {
 	DirLight light = dirLights[index];
 	if(!light.enabled)
@@ -79,7 +77,7 @@ vec4 computeDirectionnalLight(int index, Material material)
 	return vec4(ambient + diffuse + specular, 1.0);
 }
 
-vec4 computePointLight(int index, Material material)
+vec4 computePointLight(int index)
 {	
 	PointLight light = pointLights[index];
 	if(!light.enabled)
@@ -104,7 +102,7 @@ vec4 computePointLight(int index, Material material)
 	return vec4(attenuation * (ambient + diffuse + specular), 1.0);
 }
 
-vec4 computeSpotLight(int index, Material material)
+vec4 computeSpotLight(int index)
 {	
 	SpotLight light = spotLights[index];
 	if(!light.enabled)
@@ -142,8 +140,8 @@ void main()
 	FragColor = vec4(0.0);
 	for(int i = 0; i < NB_LIGHTS ; i++)
 	{		
-		FragColor += computeDirectionnalLight(i, materials[0]);
-		FragColor += computePointLight(i, materials[0]);
-		FragColor += computeSpotLight(i, materials[0]);
+		FragColor += computeDirectionnalLight(i);
+		FragColor += computePointLight(i);
+		FragColor += computeSpotLight(i);
 	}
 }
