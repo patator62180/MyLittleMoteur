@@ -9,6 +9,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "stb_image.h"
+#include "Mesh.h"
 
 
 Camera camera;
@@ -62,7 +63,7 @@ float vertices[] = {
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 1.0f,  0.0f,
 };
 
-float debugVertices[36 * 3 * 2];
+vector<unsigned int> indices = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35};
 
 glm::vec3 cubePositions[] = {
     glm::vec3(0.0f,  0.0f,  0.0f),
@@ -90,6 +91,25 @@ glm::vec3 pointLightColors[] = {
     glm::vec3(0.0f,  1.0f, 0.0f),
     glm::vec3(0.8f,  0.8f, 0.8f)
 };
+
+vector<Vertex> convertToVertices(vector<float> in)
+{
+    vector<Vertex> res;
+    for (int i = 0; i < in.size(); i+=8)
+    {
+        Vertex vertex;
+        vertex.Position.x = in[i];
+        vertex.Position.y = in[i + 1];
+        vertex.Position.z = in[i + 2];
+        vertex.TexCoords.x = in[i + 3];
+        vertex.TexCoords.y = in[i + 4];
+        vertex.Normal.x = in[i + 5];
+        vertex.Normal.y = in[i + 6];
+        vertex.Normal.z = in[i + 7];
+        res.push_back(vertex);
+    }
+    return res;
+}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -130,7 +150,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
-void setup_texture(const char* path, GLenum textureId = GL_TEXTURE0) 
+unsigned int setup_texture(const char* path, GLenum textureId = GL_TEXTURE0) 
 {
     unsigned int texture;
     int width, height, nrChannels;
@@ -149,6 +169,7 @@ void setup_texture(const char* path, GLenum textureId = GL_TEXTURE0)
         std::cout << "Failed to load texture at path : " << path << std::endl;
     }
     stbi_image_free(data);
+    return texture;
 }
 
 int main() {
@@ -209,8 +230,8 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    setup_texture("../texture/container2.png");
-    setup_texture("../texture/container2_specular.png", GL_TEXTURE1);
+    auto diffuseId = setup_texture("../texture/container2.png");
+    auto specularId = setup_texture("../texture/container2_specular.png", GL_TEXTURE1);
 
     glm::mat4 trans = glm::mat4(1.0f);
     //trans = glm::rotate(trans, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -240,6 +261,18 @@ int main() {
     auto lightPosition = lightOrigin;
     auto lightColor = glm::vec3(1.0f);
 
+    std::vector<float> verticesVector(vertices, vertices + sizeof vertices / sizeof vertices[0]);
+    vector<Texture> textures;
+    Texture diffuse;
+    diffuse.id = diffuseId;
+    diffuse.type = "texture_diffuse";
+    textures.push_back(diffuse);
+    Texture specular;
+    specular.id = specularId;
+    specular.type = "texture_specular";
+    textures.push_back(specular);
+    Mesh cubeMesh(convertToVertices(verticesVector), indices, textures);
+
     while (!glfwWindowShouldClose(window))
     {
         float currentTime = (float) glfwGetTime();
@@ -268,6 +301,7 @@ int main() {
             lightShader.setMat4("projection", camera.GetProjection());
             lightShader.setVec3("lightColor", lightColor);
 
+            glBindVertexArray(lightVAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
 
             glm::vec3 diffuseColor = 0.8f * lightColor;
@@ -302,8 +336,8 @@ int main() {
         {
             auto translate = glm::translate(glm::mat4(1.0f), position);
             objectShader.setMat4("model", translate);
-            
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            cubeMesh.Draw(objectShader);
         }
 
         glfwSwapBuffers(window);
