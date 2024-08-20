@@ -150,13 +150,12 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
-unsigned int setup_texture(const char* path, GLenum textureId = GL_TEXTURE0) 
+unsigned int setup_texture(const char* path) 
 {
-    unsigned int texture;
+    unsigned int textureId;
     int width, height, nrChannels;
-    glGenTextures(1, &texture);
-    glActiveTexture(textureId);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
     stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
     if (data)
@@ -169,7 +168,7 @@ unsigned int setup_texture(const char* path, GLenum textureId = GL_TEXTURE0)
         std::cout << "Failed to load texture at path : " << path << std::endl;
     }
     stbi_image_free(data);
-    return texture;
+    return textureId;
 }
 
 int main() {
@@ -231,7 +230,7 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     auto diffuseId = setup_texture("../texture/container2.png");
-    auto specularId = setup_texture("../texture/container2_specular.png", GL_TEXTURE1);
+    auto specularId = setup_texture("../texture/container2_specular.png");
 
     glm::mat4 trans = glm::mat4(1.0f);
     //trans = glm::rotate(trans, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
