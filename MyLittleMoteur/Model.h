@@ -9,13 +9,14 @@ using namespace std;
 class Model
 {
 public:
-    Model(const char* path);
+    Model(const char* path, bool handleAlpha);
     void Draw(Shader& shader);
 private:
     // model data
     vector<Mesh> meshes;
     string directory;
     vector<Texture> textures_loaded;
+    bool handleAlpha;
 
     void loadModel(string path);
     void processNode(aiNode* node, const aiScene* scene);

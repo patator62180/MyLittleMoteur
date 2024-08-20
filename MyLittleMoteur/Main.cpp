@@ -273,7 +273,8 @@ int main() {
     textures.push_back(specular);
     Mesh cubeMesh(convertToVertices(verticesVector), indices, textures);
 
-    Model backPackModel("../model/Backpack/backpack.obj");
+    Model backPackModel("../model/Backpack/backpack.obj", false);
+    Model cubeModel("../model/Cube/cube.obj", true);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -336,13 +337,15 @@ int main() {
         glBindVertexArray(VAO);
         for (glm::vec3 position : cubePositions)
         {
-            auto translate = glm::translate(glm::mat4(1.0f), position);
-            objectShader.setMat4("model", translate);
+            auto transform = glm::translate(glm::mat4(1.0f), position);
+            transform = glm::scale(transform, glm::vec3(0.5f));
+            objectShader.setMat4("model", transform);
 
             //cubeMesh.Draw(objectShader);
+            cubeModel.Draw(objectShader);
         }
 
-        auto translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,0.0f));
+        auto translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,-7.0f));
         objectShader.setMat4("model", translate);
         backPackModel.Draw(objectShader);
 
