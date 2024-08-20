@@ -10,6 +10,7 @@
 #include "Camera.h"
 #include "stb_image.h"
 #include "Mesh.h"
+#include "Model.h"
 
 
 Camera camera;
@@ -264,13 +265,15 @@ int main() {
     vector<Texture> textures;
     Texture diffuse;
     diffuse.id = diffuseId;
-    diffuse.type = "texture_diffuse";
+    diffuse.type = "diffuse";
     textures.push_back(diffuse);
     Texture specular;
     specular.id = specularId;
-    specular.type = "texture_specular";
+    specular.type = "specular";
     textures.push_back(specular);
     Mesh cubeMesh(convertToVertices(verticesVector), indices, textures);
+
+    Model backPackModel("../model/Backpack/backpack.obj");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -336,8 +339,12 @@ int main() {
             auto translate = glm::translate(glm::mat4(1.0f), position);
             objectShader.setMat4("model", translate);
 
-            cubeMesh.Draw(objectShader);
+            //cubeMesh.Draw(objectShader);
         }
+
+        auto translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,0.0f));
+        objectShader.setMat4("model", translate);
+        backPackModel.Draw(objectShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
