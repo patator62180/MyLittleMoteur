@@ -163,7 +163,18 @@ int main() {
 
         for (Light& light : lightList)
         {
-            light.Draw(cubeModel, lightShader, camera);
+			auto lightModel = glm::translate(glm::mat4(1.0), light.position);
+			lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+
+            lightShader.use();
+            lightShader.setMat4("transform", glm::mat4(1.0f));
+            lightShader.setMat4("model", lightModel);
+            lightShader.setMat4("view", camera.GetLookAt());
+            lightShader.setMat4("projection", camera.GetProjection());
+            lightShader.setVec3("lightColor", 5.0f*light.ambient);
+
+            cubeModel.Draw(lightShader);
+            //light.Draw(cubeModel, lightShader, camera);
             light.Apply(objectShader);
         }
 

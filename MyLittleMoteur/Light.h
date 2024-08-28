@@ -18,10 +18,9 @@ public:
 	Light(unsigned int index, glm::vec3 position, float range, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
 	Light(unsigned int index, glm::vec3 position, glm::vec3 direction, float range, float cutoff, float blend, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
 
-	void Draw(const Model& model, const Shader& shader, const Camera& camera) const;
+	//void Draw(const Model& model, const Shader& shader, const Camera& camera) const;
 	void Apply(const Shader& shader) const;
 
-private:
 	glm::vec3 position;
 	glm::quat direction;
 	glm::vec3 ambient;

@@ -38,20 +38,20 @@ Light::Light(unsigned int index, glm::vec3 position, glm::vec3 direction, float 
 	this->specular = specular;
 }
 
-void Light::Draw(const Model& model, const Shader& shader, const Camera& camera) const
-{
-	auto lightModel = glm::translate(glm::mat4(1.0), position);
-	lightModel = glm::scale(lightModel, glm::vec3(0.2f));
-
-	shader.use();
-	shader.setMat4("transform", glm::mat4(1.0f));
-	shader.setMat4("model", lightModel);
-	shader.setMat4("view", camera.GetLookAt());
-	shader.setMat4("projection", camera.GetProjection());
-	shader.setVec3("lightColor", ambient);
-
-	model.Draw(shader);
-}
+//void Light::Draw(const Model& model, const Shader& shader, const Camera& camera) const
+//{
+//	auto lightModel = glm::translate(glm::mat4(1.0), position);
+//	lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+//
+//	shader.use();
+//	shader.setMat4("transform", glm::mat4(1.0f));
+//	shader.setMat4("model", lightModel);
+//	shader.setMat4("view", camera.GetLookAt());
+//	shader.setMat4("projection", camera.GetProjection());
+//	shader.setVec3("lightColor", ambient);
+//
+//	model.Draw(shader);
+//}
 
 void Light::Apply(const Shader& shader) const
 {
