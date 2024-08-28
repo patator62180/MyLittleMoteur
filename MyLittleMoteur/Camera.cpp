@@ -14,37 +14,37 @@ Camera::Camera()
 	zoom = 45;
 }
 
-float Camera::GetPitch()
+float Camera::GetPitch() const
 {
 	return pitch;
 }
 
-float Camera::GetYaw()
+float Camera::GetYaw() const
 {
 	return yaw;
 }
 
-glm::vec3 Camera::GetForward()
+glm::vec3 Camera::GetForward() const
 {
 	return forward;
 }
 
-glm::vec3 Camera::GetLeft()
+glm::vec3 Camera::GetLeft() const
 {
 	return left;
 }
 
-glm::vec3 Camera::GetUp()
+glm::vec3 Camera::GetUp() const
 {
 	return up;
 }
 
-glm::mat4 Camera::GetLookAt()
+glm::mat4 Camera::GetLookAt() const
 {
 	return glm::lookAt(Position, Position + forward, up);
 }
 
-glm::mat4 Camera::GetProjection()
+glm::mat4 Camera::GetProjection() const
 {
 	return glm::perspective(glm::radians(zoom), 800.0f / 600.0f, 0.1f, 100.0f);
 }

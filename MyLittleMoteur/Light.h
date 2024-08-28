@@ -2,8 +2,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <Shader.h>
 
-enum lightType
+enum ELightType
 {
 	Point,
 	Directionnal,
@@ -12,6 +13,13 @@ enum lightType
 
 class Light
 {
+public:
+	Light(unsigned int index, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+	Light(unsigned int index, glm::vec3 position, float range, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+	Light(unsigned int index, glm::vec3 position, glm::vec3 direction, float range, float cutoff, float blend, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+
+	void Draw(const Model& model, const Shader& shader, const Camera& camera) const;
+	void Apply(const Shader& shader) const;
 
 private:
 	glm::vec3 position;
@@ -22,5 +30,7 @@ private:
 	float range;
 	float cutoff;
 	float blend;
+	ELightType type;
+	unsigned int index;
 };
 

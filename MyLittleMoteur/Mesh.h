@@ -28,7 +28,7 @@ public:
     vector<Texture>      textures;
 
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
-    void Draw(Shader& shader);
+    void Draw(const Shader& shader) const;
 private:
     //  render data
     unsigned int VAO, VBO, EBO;

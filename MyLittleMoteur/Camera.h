@@ -8,15 +8,15 @@ public:
 
 	glm::vec3 Position;
 
-	float GetPitch();
-	float GetYaw();
+	float GetPitch() const;
+	float GetYaw() const;
 
-	glm::vec3 GetForward();
-	glm::vec3 GetUp();
-	glm::vec3 GetLeft();
+	glm::vec3 GetForward() const;
+	glm::vec3 GetUp() const;
+	glm::vec3 GetLeft() const;
 
-	glm::mat4 GetLookAt();
-	glm::mat4 GetProjection();
+	glm::mat4 GetLookAt() const;
+	glm::mat4 GetProjection() const;
 
 	void ProcessInput(GLFWwindow* window, float deltaTime);
 	void ProcessMouseMovement(float xoffset, float yoffset);

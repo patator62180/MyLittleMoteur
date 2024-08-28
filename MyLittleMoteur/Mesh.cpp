@@ -9,7 +9,7 @@ Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture
     setupMesh();
 }
 
-void Mesh::Draw(Shader& shader)
+void Mesh::Draw(const Shader& shader) const
 {
     for (int i = 0; i < textures.size(); i++)
     {

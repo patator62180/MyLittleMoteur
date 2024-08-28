@@ -9,6 +9,7 @@
 #include "stb_image.h"
 #include "Mesh.h"
 #include "Model.h"
+#include "Light.h"
 
 Camera camera;
 bool firstMouse = true;
@@ -137,6 +138,17 @@ int main() {
     Model backPackModel("../model/Backpack/backpack.obj", false);
     Model cubeModel("../model/Cube/cube.obj", true);
 
+    std::list<Light> lightList;
+    for (unsigned int i = 0; i <= (unsigned int) pointLightPositions->length(); i++)
+    {
+        lightColor = pointLightColors[i];
+        glm::vec3 diffuseColor = 0.8f * lightColor;
+        glm::vec3 ambientColor = 0.2f * diffuseColor;
+        glm::vec3 specularColor = glm::vec3(1.0);
+        Light light(i, pointLightPositions[i], 80.0f, ambientColor, diffuseColor, specularColor);
+        lightList.push_back(light);
+    }
+
     while (!glfwWindowShouldClose(window))
     {
         float currentTime = (float) glfwGetTime();
@@ -149,37 +161,10 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //Draw light
-        for (int i = 0; i <= pointLightPositions->length(); i++)
+        for (Light& light : lightList)
         {
-            lightPosition = pointLightPositions[i];
-            lightColor = pointLightColors[i];
-
-            auto lightModel = glm::translate(glm::mat4(1.0), lightPosition);
-            lightModel = glm::scale(lightModel, glm::vec3(0.2f));
-
-            lightShader.use();
-            lightShader.setMat4("transform", glm::mat4(1.0f));
-            lightShader.setMat4("model", lightModel);
-            lightShader.setMat4("view", camera.GetLookAt());
-            lightShader.setMat4("projection", camera.GetProjection());
-            lightShader.setVec3("lightColor", lightColor);
-
-            cubeModel.Draw(lightShader);
-
-            glm::vec3 diffuseColor = 0.8f * lightColor;
-            glm::vec3 ambientColor = 0.2f * diffuseColor;
-            float range = 80.0f;
-
-            auto strLight = "pointLights[" + std::to_string(i) + "]";
-            objectShader.use();
-            objectShader.setBool(strLight + ".enabled", true);
-            objectShader.setVec3(strLight + ".ambient", ambientColor);
-            objectShader.setVec3(strLight + ".diffuse", diffuseColor);
-            objectShader.setVec3(strLight + ".specular", 1.0f, 1.0f, 1.0f);
-            objectShader.setVec3(strLight + ".position", lightPosition);
-            objectShader.setFloat(strLight + ".attenuationLinear", 4.5f / range);
-            objectShader.setFloat(strLight + ".attenuationQuad", 75.0f / (range * range));
+            light.Draw(cubeModel, lightShader, camera);
+            light.Apply(objectShader);
         }
 
         //draw objects

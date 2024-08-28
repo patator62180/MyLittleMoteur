@@ -11,7 +11,7 @@ Model::Model(const char* path, bool handleAlpha)
     loadModel(path);
 }
 
-void Model::Draw(Shader& shader)
+void Model::Draw(const Shader& shader) const
 {
 	for (int i = 0; i < meshes.size(); i++)
 		meshes[i].Draw(shader);

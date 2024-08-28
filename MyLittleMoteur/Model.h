@@ -10,7 +10,7 @@ class Model
 {
 public:
     Model(const char* path, bool handleAlpha);
-    void Draw(Shader& shader);
+    void Draw(const Shader& shader) const;
 private:
     // model data
     vector<Mesh> meshes;
