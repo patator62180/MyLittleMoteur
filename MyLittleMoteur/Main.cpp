@@ -19,16 +19,8 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 glm::vec3 cubePositions[] = {
-    glm::vec3(0.0f,  0.0f,  0.0f),
-    glm::vec3(2.0f,  5.0f, -15.0f),
-    glm::vec3(-1.5f, -2.2f, -2.5f),
-    glm::vec3(-3.8f, -2.0f, -12.3f),
-    glm::vec3(2.4f, -0.4f, -3.5f),
-    glm::vec3(-1.7f,  3.0f, -7.5f),
-    glm::vec3(1.3f, -2.0f, -2.5f),
-    glm::vec3(1.5f,  2.0f, -2.5f),
-    glm::vec3(1.5f,  0.2f, -1.5f),
-    glm::vec3(-1.3f,  1.0f, -1.5f)
+    glm::vec3(0.0f,  0.5f,  0.0f),
+    glm::vec3(2.0f,  0.5f,  -2.0f),
 };
 
 glm::vec3 pointLightPositions[] = {
@@ -135,15 +127,16 @@ int main() {
     auto lightPosition = lightOrigin;
     auto lightColor = glm::vec3(1.0f);
 
-    Model backPackModel("../model/Backpack/backpack.obj", false);
+    //Model backPackModel("../model/Backpack/backpack.obj", false);
     Model cubeModel("../model/Cube/cube.obj", true);
+    Model planeModel("../model/Plane/plane.obj", false);
 
     std::list<Light> lightList;
     for (unsigned int i = 0; i <= (unsigned int) pointLightPositions->length(); i++)
     {
         lightColor = pointLightColors[i];
-        glm::vec3 diffuseColor = 0.8f * lightColor;
-        glm::vec3 ambientColor = 0.2f * diffuseColor;
+        glm::vec3 diffuseColor = 1.0f * lightColor;
+        glm::vec3 ambientColor = 0.5f * diffuseColor;
         glm::vec3 specularColor = glm::vec3(1.0);
         Light light(i, pointLightPositions[i], 80.0f, ambientColor, diffuseColor, specularColor);
         lightList.push_back(light);
@@ -174,7 +167,6 @@ int main() {
             lightShader.setVec3("lightColor", 5.0f*light.ambient);
 
             cubeModel.Draw(lightShader);
-            //light.Draw(cubeModel, lightShader, camera);
             light.Apply(objectShader);
         }
 
@@ -190,18 +182,21 @@ int main() {
         objectShader.setInt("material.specular", 1);
         objectShader.setFloat("material.shininess", 32.0f);
         
-        for (glm::vec3 position : cubePositions)
-        {
-            auto transform = glm::translate(glm::mat4(1.0f), position);
-            transform = glm::scale(transform, glm::vec3(0.5f));
-            objectShader.setMat4("model", transform);
+		 for (glm::vec3 position : cubePositions)
+		 {
+			 auto transform = glm::translate(glm::mat4(1.0f), position);
+			 transform = glm::scale(transform, glm::vec3(0.5f));
+			 objectShader.setMat4("model", transform);
 
-            cubeModel.Draw(objectShader);
-        }
+			 cubeModel.Draw(objectShader);
+		 }
 
-        auto translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,-7.0f));
-        objectShader.setMat4("model", translate);
-        backPackModel.Draw(objectShader);
+        
+        auto transform = glm::scale(glm::mat4(1.0), glm::vec3(3.0f));
+        objectShader.setMat4("model", transform);
+        planeModel.Draw(objectShader);
+
+		//backPackModel.Draw(objectShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
