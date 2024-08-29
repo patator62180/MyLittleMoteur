@@ -104,7 +104,11 @@ int main() {
     Shader lightShader("../shader/lightShader.vs", "../shader/lightShader.fs");
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     glm::mat4 trans = glm::mat4(1.0f);
     //trans = glm::rotate(trans, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -152,7 +156,7 @@ int main() {
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         for (Light& light : lightList)
         {
@@ -182,19 +186,41 @@ int main() {
         objectShader.setInt("material.specular", 1);
         objectShader.setFloat("material.shininess", 32.0f);
         
-		 for (glm::vec3 position : cubePositions)
-		 {
-			 auto transform = glm::translate(glm::mat4(1.0f), position);
-			 transform = glm::scale(transform, glm::vec3(0.5f));
-			 objectShader.setMat4("model", transform);
-
-			 cubeModel.Draw(objectShader);
-		 }
-
-        
+       
         auto transform = glm::scale(glm::mat4(1.0), glm::vec3(3.0f));
         objectShader.setMat4("model", transform);
         planeModel.Draw(objectShader);
+
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
+
+		for (glm::vec3 position : cubePositions)
+		{
+			auto transform = glm::translate(glm::mat4(1.0f), position);
+			transform = glm::scale(transform, glm::vec3(0.5f));
+			objectShader.setMat4("model", transform);
+
+			cubeModel.Draw(objectShader);
+		}
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00); // disable writing to the stencil buffer
+		glDisable(GL_DEPTH_TEST);
+
+		for (glm::vec3 position : cubePositions)
+		{
+			auto transform = glm::translate(glm::mat4(1.0f), position);
+			transform = glm::scale(transform, glm::vec3(0.55f));
+            lightShader.use();
+			lightShader.setMat4("model", transform);
+
+			cubeModel.Draw(lightShader);
+		}
+
+		glEnable(GL_DEPTH_TEST);
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
 		//backPackModel.Draw(objectShader);
 
