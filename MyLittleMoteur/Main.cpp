@@ -209,7 +209,6 @@ int main() {
 
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		glStencilMask(0x00); // disable writing to the stencil buffer
-		//glDisable(GL_DEPTH_TEST);
 
 		for (glm::vec3 position : cubePositions)
 		{
@@ -221,7 +220,6 @@ int main() {
 			cubeModel.Draw(lightShader);
 		}
 
-		//glEnable(GL_DEPTH_TEST);
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
