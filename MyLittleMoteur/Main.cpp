@@ -24,10 +24,10 @@ glm::vec3 cubePositions[] = {
 };
 
 glm::vec3 pointLightPositions[] = {
-    glm::vec3(0.7f,  0.2f,  2.0f),
-    glm::vec3(2.3f, -3.3f, -4.0f),
-    glm::vec3(-4.0f,  2.0f, -12.0f),
-    glm::vec3(0.0f,  0.0f, -3.0f)
+    glm::vec3(3.0f,  2.0f,  -3.0f),
+    glm::vec3(-3.0f, 2.0f, 3.0f),
+    glm::vec3(3.0f,  2.0f, 3.0f),
+    glm::vec3(-3.0f,  2.0f, -3.0f)
 };
 
 glm::vec3 pointLightColors[] = {
@@ -108,7 +108,7 @@ int main() {
 	glDepthFunc(GL_LESS);
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
 
     glm::mat4 trans = glm::mat4(1.0f);
     //trans = glm::rotate(trans, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -145,6 +145,7 @@ int main() {
         Light light(i, pointLightPositions[i], 80.0f, ambientColor, diffuseColor, specularColor);
         lightList.push_back(light);
     }
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -187,12 +188,14 @@ int main() {
         objectShader.setFloat("material.shininess", 32.0f);
         
        
+        glStencilMask(0x00);
         auto transform = glm::scale(glm::mat4(1.0), glm::vec3(3.0f));
+        transform = glm::translate(transform, glm::vec3(0.0f, -0.001f, 0.0f));
         objectShader.setMat4("model", transform);
         planeModel.Draw(objectShader);
 
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glStencilMask(0xFF);
 
 		for (glm::vec3 position : cubePositions)
@@ -206,7 +209,7 @@ int main() {
 
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		glStencilMask(0x00); // disable writing to the stencil buffer
-		glDisable(GL_DEPTH_TEST);
+		//glDisable(GL_DEPTH_TEST);
 
 		for (glm::vec3 position : cubePositions)
 		{
@@ -218,7 +221,7 @@ int main() {
 			cubeModel.Draw(lightShader);
 		}
 
-		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_DEPTH_TEST);
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
