@@ -17,6 +17,22 @@ void Model::Draw(const Shader& shader) const
 		meshes[i].Draw(shader);
 }
 
+void Model::DrawWithOutline(const Shader& shader, const Shader& outlineShader) const
+{
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0xFF);
+
+    Draw(shader);
+
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilMask(0x00); // disable writing to the stencil buffer
+
+    Draw(outlineShader);
+
+	glStencilMask(0xFF);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+}
+
 void Model::loadModel(string path)
 {
     Assimp::Importer import;

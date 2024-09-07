@@ -131,7 +131,7 @@ int main() {
     auto lightPosition = lightOrigin;
     auto lightColor = glm::vec3(1.0f);
 
-    //Model backPackModel("../model/Backpack/backpack.obj", false);
+    Model backPackModel("../model/Backpack/backpack.obj", false);
     Model cubeModel("../model/Cube/cube.obj", true);
     Model planeModel("../model/Plane/plane.obj", false);
 
@@ -194,36 +194,25 @@ int main() {
         objectShader.setMat4("model", transform);
         planeModel.Draw(objectShader);
 
-
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glStencilMask(0xFF);
-
 		for (glm::vec3 position : cubePositions)
 		{
 			auto transform = glm::translate(glm::mat4(1.0f), position);
 			transform = glm::scale(transform, glm::vec3(0.5f));
+            objectShader.use();
 			objectShader.setMat4("model", transform);
-
-			cubeModel.Draw(objectShader);
-		}
-
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-		glStencilMask(0x00); // disable writing to the stencil buffer
-
-		for (glm::vec3 position : cubePositions)
-		{
-			auto transform = glm::translate(glm::mat4(1.0f), position);
-			transform = glm::scale(transform, glm::vec3(0.55f));
+            transform = glm::scale(transform, glm::vec3(1.05f));
             lightShader.use();
-			lightShader.setMat4("model", transform);
+            lightShader.setMat4("model", transform);
 
-			cubeModel.Draw(lightShader);
+			cubeModel.DrawWithOutline(objectShader, lightShader);
 		}
 
-		glStencilMask(0xFF);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
-		//backPackModel.Draw(objectShader);
+		transform = glm::scale(glm::mat4(1.0), glm::vec3(2.0f));
+		transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, -2.0f));
+        objectShader.use();
+		objectShader.setMat4("model", transform);
+		backPackModel.Draw(objectShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

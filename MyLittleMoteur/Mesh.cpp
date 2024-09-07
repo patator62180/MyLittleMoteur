@@ -11,6 +11,7 @@ Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture
 
 void Mesh::Draw(const Shader& shader) const
 {
+    shader.use();
     for (int i = 0; i < textures.size(); i++)
     {
         auto texture = textures[i];

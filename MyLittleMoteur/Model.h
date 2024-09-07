@@ -11,6 +11,7 @@ class Model
 public:
     Model(const char* path, bool handleAlpha);
     void Draw(const Shader& shader) const;
+    void DrawWithOutline(const Shader& shader, const Shader& outlineShader) const;
 private:
     // model data
     vector<Mesh> meshes;
