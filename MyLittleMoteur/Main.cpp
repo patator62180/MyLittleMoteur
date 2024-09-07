@@ -23,6 +23,20 @@ glm::vec3 cubePositions[] = {
     glm::vec3(2.0f,  0.5f,  -2.0f),
 };
 
+glm::vec3 OrthographicPositions[] = {
+    glm::vec3(-5.0f,0.0f,0.0f),
+    glm::vec3(-4.0f,0.0f,0.0f),
+    glm::vec3(-5.0f,1.0f,0.0f),
+    glm::vec3(-5.0f,0.0f,1.0f)
+};
+
+glm::vec3 OrthographicColors[] = {
+    glm::vec3(1.0f, 1.0f, 1.0f),
+    glm::vec3(1.0f, 0.0f, 0.0f),
+    glm::vec3(0.0f, 1.0f, 0.0f),
+    glm::vec3(0.0f, 0.0f, 1.0f)
+};
+
 glm::vec3 pointLightPositions[] = {
     glm::vec3(3.0f,  2.0f,  -3.0f),
     glm::vec3(-3.0f, 2.0f, 3.0f),
@@ -74,6 +88,22 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
+}
+
+void draw_OrthonormalReference(const Model& cubeModel, const Shader& shader) 
+{
+	for (unsigned int i = 0; i <= (unsigned int)OrthographicPositions->length(); i++)
+	{
+        auto position = OrthographicPositions[i];
+        auto color = OrthographicColors[i];
+		auto transform = glm::translate(glm::mat4(1.0f), position);
+		transform = glm::scale(transform, glm::vec3(0.25f));
+        shader.use();
+		shader.setMat4("model", transform);
+        shader.setVec3("lightColor", color);
+
+		cubeModel.Draw(shader);
+	}
 }
 
 int main() {
@@ -213,6 +243,8 @@ int main() {
         objectShader.use();
 		objectShader.setMat4("model", transform);
 		backPackModel.Draw(objectShader);
+
+        draw_OrthonormalReference(cubeModel, lightShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
