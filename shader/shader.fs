@@ -54,7 +54,7 @@ uniform DirLight dirLights[NB_LIGHTS];
 uniform PointLight pointLights[NB_LIGHTS];
 uniform SpotLight spotLights[NB_LIGHTS];
 
-
+#define ALPHA_CUT_OFF 0.1
 
 vec4 computeDirectionnalLight(int index)
 {
@@ -62,19 +62,26 @@ vec4 computeDirectionnalLight(int index)
 	if(!light.enabled)
 	{
 		return vec4(0.0);
+	}		
+	
+	vec4 diffuseTex = texture(material.diffuse, TexCoord);
+	if(diffuseTex.a < ALPHA_CUT_OFF)
+	{
+		discard;
 	}
-	vec3 ambient = vec3(texture(material.diffuse, TexCoord)) * light.ambient;
+
+	vec4 ambient = diffuseTex * vec4(light.ambient,1.0);
 
 	vec3 norm = normalize(Normal);
 	vec3 lightDirection = normalize(-light.direction);
-	vec3 diffuse = vec3(texture(material.diffuse, TexCoord)) * max(dot(lightDirection, norm), 0.0) * light.diffuse;
+	vec4 diffuse = diffuseTex * max(dot(lightDirection, norm), 0.0) * vec4(light.diffuse,1.0);
  
 	vec3 viewDirection = normalize(viewPosition - FragPos);
 	vec3 reflectDirection = reflect(-lightDirection, norm);
 	float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), material.shininess);
-	vec3 specular = texture(material.specular, TexCoord).xyz * spec * light.specular;
+	vec4 specular = texture(material.specular, TexCoord)* spec * vec4(light.specular,1.0);
 
-	return vec4(ambient + diffuse + specular, 1.0);
+	return ambient + diffuse + specular;
 }
 
 vec4 computePointLight(int index)
@@ -83,23 +90,30 @@ vec4 computePointLight(int index)
 	if(!light.enabled)
 	{
 		return vec4(0.0);
+	}	
+	
+	vec4 diffuseTex = texture(material.diffuse, TexCoord);
+	if(diffuseTex.a < ALPHA_CUT_OFF)
+	{
+		discard;
 	}
-	vec3 ambient = vec3(texture(material.diffuse, TexCoord)) * light.ambient;
+
+	vec4 ambient = diffuseTex * vec4(light.ambient, 1.0);
 	
 	vec3 lightDirection = normalize(light.position - FragPos);
 	vec3 norm = normalize(Normal);
 	float diff = max(dot(norm, lightDirection),0.0);
-	vec3 diffuse = diff * vec3(texture(material.diffuse, TexCoord)) * light.diffuse;
+	vec4 diffuse = diff * diffuseTex * vec4(light.diffuse,1.0);
  
 	vec3 viewDirection = normalize(viewPosition - FragPos);
 	vec3 reflectDirection = reflect(-lightDirection, norm);
 	float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), material.shininess);
-	vec3 specular = texture(material.specular, TexCoord).xyz * spec * light.specular;
+	vec4 specular = texture(material.specular, TexCoord) * spec * vec4(light.specular,1.0);
 	
 	float distance = length(light.position - FragPos);
 	float attenuation = 1.0 / ( 1.0 + light.attenuationLinear * distance + light.attenuationQuad * distance * distance);
 
-	return vec4(attenuation * (ambient + diffuse + specular), 1.0);
+	return attenuation * (ambient + diffuse + specular);
 }
 
 vec4 computeSpotLight(int index)
@@ -109,30 +123,37 @@ vec4 computeSpotLight(int index)
 	{
 		return vec4(0.0);
 	}
-	vec3 ambient = vec3(texture(material.diffuse, TexCoord)) * light.ambient;
+	
+	vec4 diffuseTex = texture(material.diffuse, TexCoord);
+	if(diffuseTex.a < ALPHA_CUT_OFF)
+	{
+		discard;
+	}
+
+	vec4 ambient = diffuseTex * vec4(light.ambient, 1.0);
 	
 	vec3 lightDirection = normalize(light.position - FragPos);
 	vec3 norm = normalize(Normal);
 	float diff = max(dot(norm, lightDirection),0.0);
-	vec3 diffuse = diff * vec3(texture(material.diffuse, TexCoord)) * light.diffuse;
+	vec4 diffuse = diff * diffuseTex * vec4(light.diffuse, 1.0);
  
 	vec3 viewDirection = normalize(viewPosition - FragPos);
 	vec3 reflectDirection = reflect(-lightDirection, norm);
 	float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), material.shininess);
-	vec3 specular = texture(material.specular, TexCoord).xyz * spec * light.specular;
+	vec4 specular = texture(material.specular, TexCoord) * spec * vec4(light.specular, 1.0);
 
 	float cosTheta = dot(normalize(-light.direction), lightDirection);
 	float cosPhi = cos(light.cutOff);
 
 	if(cosTheta < cosPhi)
 	{
-		return vec4(ambient, 1.0);
+		return ambient;
 	}
 
 	float blend = (cosTheta - cosPhi) / (cos((1.0-light.blend) * light.cutOff) - cosPhi);
 	blend = clamp(blend, 0.0, 1.0);
 
-	return vec4(blend * (diffuse + specular) + ambient, 1.0);
+	return blend * (diffuse + specular) + ambient;
 }
 
 void main()

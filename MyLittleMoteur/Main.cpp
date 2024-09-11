@@ -170,9 +170,9 @@ int main() {
     auto lightColor = glm::vec3(1.0f);
 
     //Model backPackModel("../model/Backpack/backpack.obj", false);
-    Model cubeModel("../model/Cube/cube.obj", true);
-    Model planeModel("../model/Plane/plane.obj", false);
-    Model grassModel("../model/Grass/grass.obj", true);
+    Model cubeModel("../model/Cube/cube.obj", true, false);
+    Model planeModel("../model/Plane/plane.obj", false, false);
+    Model grassModel("../model/Grass/grass.obj", true, true);
 
     std::list<Light> lightList;
     for (unsigned int i = 0; i <= (unsigned int) pointLightPositions->length(); i++)

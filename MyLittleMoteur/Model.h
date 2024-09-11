@@ -9,7 +9,7 @@ using namespace std;
 class Model
 {
 public:
-    Model(const char* path, bool handleAlpha);
+    Model(const char* path, bool handleAlpha, bool handleAlphaInternal);
     void Draw(const Shader& shader) const;
     void DrawWithOutline(const Shader& shader, const Shader& outlineShader) const;
 private:
@@ -18,6 +18,7 @@ private:
     string directory;
     vector<Texture> textures_loaded;
     bool handleAlpha;
+    bool handleAlphaInternal;
 
     void loadModel(string path);
     void processNode(aiNode* node, const aiScene* scene);

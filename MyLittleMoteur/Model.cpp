@@ -5,9 +5,10 @@
 #include <stb_image.h>
 
 
-Model::Model(const char* path, bool handleAlpha)
+Model::Model(const char* path, bool handleAlpha, bool handleAlphaInternal)
 {
     this->handleAlpha = handleAlpha;
+    this->handleAlphaInternal = handleAlphaInternal;
     loadModel(path);
 }
 
@@ -140,7 +141,7 @@ Texture Model::createTexture(const char* fileName, std::string directory, std::s
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, handleAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, handleAlphaInternal ? GL_RGBA : GL_RGB, width, height, 0, handleAlpha ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
