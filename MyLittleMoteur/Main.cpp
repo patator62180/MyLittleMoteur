@@ -19,8 +19,8 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 glm::vec3 cubePositions[] = {
-    glm::vec3(0.0f,  0.5f,  0.0f),
-    glm::vec3(2.0f,  0.5f,  -2.0f),
+    glm::vec3(0.0f,  0.0f,  0.0f),
+    glm::vec3(2.0f,  0.0f,  -2.0f),
 };
 
 glm::vec3 OrthographicPositions[] = {
@@ -49,6 +49,14 @@ glm::vec3 pointLightColors[] = {
     glm::vec3(1.0f, 0.0f, 0.0f),
     glm::vec3(0.0f,  1.0f, 0.0f),
     glm::vec3(0.8f,  0.8f, 0.8f)
+};
+
+glm::vec3 grassPositions[] = {
+    glm::vec3(-1.5f,  0.0f, -0.48f),
+    glm::vec3(1.5f,  0.0f,  0.51f),
+    glm::vec3(0.0f,  0.0f,  0.7f),
+    glm::vec3(-0.3f,  0.0f, -2.3f),
+    glm::vec3(0.5f,  0.0f, -0.6f)
 };
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -161,9 +169,10 @@ int main() {
     auto lightPosition = lightOrigin;
     auto lightColor = glm::vec3(1.0f);
 
-    Model backPackModel("../model/Backpack/backpack.obj", false);
+    //Model backPackModel("../model/Backpack/backpack.obj", false);
     Model cubeModel("../model/Cube/cube.obj", true);
     Model planeModel("../model/Plane/plane.obj", false);
+    Model grassModel("../model/Grass/grass.obj", true);
 
     std::list<Light> lightList;
     for (unsigned int i = 0; i <= (unsigned int) pointLightPositions->length(); i++)
@@ -220,7 +229,7 @@ int main() {
        
         glStencilMask(0x00);
         auto transform = glm::scale(glm::mat4(1.0), glm::vec3(3.0f));
-        transform = glm::translate(transform, glm::vec3(0.0f, -0.001f, 0.0f));
+        transform = glm::translate(transform, glm::vec3(0.0f, -0.171f, 0.0f));
         objectShader.setMat4("model", transform);
         planeModel.Draw(objectShader);
 
@@ -242,7 +251,18 @@ int main() {
 		transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, -2.0f));
         objectShader.use();
 		objectShader.setMat4("model", transform);
-		backPackModel.Draw(objectShader);
+		//backPackModel.Draw(objectShader);
+
+        for (auto position : grassPositions) 
+        {
+            objectShader.use();
+            auto model = glm::translate(glm::mat4(1.0), position);
+            model = glm::rotate(model, -glm::half_pi<float>(), glm::vec3(1.0, 0.0, 0.0));
+            model = glm::scale(model, glm::vec3(0.5));
+            objectShader.setMat4("model", model);
+
+            grassModel.Draw(objectShader);
+        }
 
         draw_OrthonormalReference(cubeModel, lightShader);
 
