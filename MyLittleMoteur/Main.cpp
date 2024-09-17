@@ -150,6 +150,9 @@ int main() {
 	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+    glFrontFace(GL_CW);
 
     glm::mat4 trans = glm::mat4(1.0f);
     //trans = glm::rotate(trans, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -267,7 +270,7 @@ int main() {
         {
             objectShader.use();
             auto model = glm::translate(glm::mat4(1.0), it->second);
-            model = glm::rotate(model, -glm::half_pi<float>(), glm::vec3(1.0, 0.0, 0.0));
+            model = glm::rotate(model, glm::half_pi<float>(), glm::vec3(1.0, 0.0, 0.0));
             model = glm::scale(model, glm::vec3(0.5));
             objectShader.setMat4("model", model);
 
