@@ -10,6 +10,7 @@
 #include "Mesh.h"
 #include "Model.h"
 #include "Light.h"
+#include <map>
 
 Camera camera;
 bool firstMouse = true;
@@ -147,6 +148,8 @@ int main() {
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glm::mat4 trans = glm::mat4(1.0f);
     //trans = glm::rotate(trans, glm::radians(-45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -172,14 +175,14 @@ int main() {
     //Model backPackModel("../model/Backpack/backpack.obj", false);
     Model cubeModel("../model/Cube/cube.obj", true, false);
     Model planeModel("../model/Plane/plane.obj", false, false);
-    Model grassModel("../model/Grass/grass.obj", true, true);
+    Model grassModel("../model/Glass/glass.obj", true, true);
 
     std::list<Light> lightList;
     for (unsigned int i = 0; i <= (unsigned int) pointLightPositions->length(); i++)
     {
         lightColor = pointLightColors[i];
-        glm::vec3 diffuseColor = 1.0f * lightColor;
-        glm::vec3 ambientColor = 0.5f * diffuseColor;
+        glm::vec3 diffuseColor = 0.5f * lightColor;
+        glm::vec3 ambientColor = 0.3f * diffuseColor;
         glm::vec3 specularColor = glm::vec3(1.0);
         Light light(i, pointLightPositions[i], 80.0f, ambientColor, diffuseColor, specularColor);
         lightList.push_back(light);
@@ -253,10 +256,17 @@ int main() {
 		objectShader.setMat4("model", transform);
 		//backPackModel.Draw(objectShader);
 
-        for (auto position : grassPositions) 
+		std::map<float, glm::vec3> sorted;
+		for (glm::vec3 position : grassPositions)
+		{
+			float distance = glm::length(camera.Position - position);
+			sorted[distance] = position;
+		}
+
+        for (auto it = sorted.rbegin(); it != sorted.rend(); it++) 
         {
             objectShader.use();
-            auto model = glm::translate(glm::mat4(1.0), position);
+            auto model = glm::translate(glm::mat4(1.0), it->second);
             model = glm::rotate(model, -glm::half_pi<float>(), glm::vec3(1.0, 0.0, 0.0));
             model = glm::scale(model, glm::vec3(0.5));
             objectShader.setMat4("model", model);
