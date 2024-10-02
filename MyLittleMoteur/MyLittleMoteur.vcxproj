@@ -155,6 +155,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shader\lightShader.fs" />
+    <None Include="..\shader\quadShader.fs" />
+    <None Include="..\shader\quadShader.vs" />
     <None Include="..\shader\shader.fs" />
     <None Include="..\shader\shader.vs" />
     <None Include="lightShader.vs" />

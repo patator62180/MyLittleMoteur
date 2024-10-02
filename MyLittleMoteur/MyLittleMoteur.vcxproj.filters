@@ -57,6 +57,12 @@
     <None Include="..\shader\lightShader.fs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="..\shader\quadShader.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\shader\quadShader.vs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\inlcude\Shader.h">
