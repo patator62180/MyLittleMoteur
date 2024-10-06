@@ -30,3 +30,7 @@
 /.vs
 /x64
 /MyLittleMoteur/x64
+
+
+# Bazel Build
+/bazel-*
