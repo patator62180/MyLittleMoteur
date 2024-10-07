@@ -18,7 +18,6 @@ endif()
 #
 
 set(DEFAULT_PROJECT_OPTIONS
-    DEBUG_POSTFIX             "d"
     CXX_STANDARD              11 # Not available before CMake 3.1; see below for manual command line argument addition
     C_STANDARD                11
     LINKER_LANGUAGE           "CXX"

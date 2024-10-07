@@ -8,7 +8,11 @@ filegroup(
 
 cmake(
     name = "assimp",
-    generate_args = ["-DBUILD_SHARED_LIBS=OFF", "-DASSIMP_WARNINGS_AS_ERRORS=OFF"],
+    generate_args = [
+        "-DBUILD_SHARED_LIBS=OFF",
+        "-DASSIMP_WARNINGS_AS_ERRORS=OFF",
+        "-DASSIMP_INJECT_DEBUG_POSTFIX=OFF"
+    ],
     lib_source = ":srcs",
     out_static_libs = ["assimp-vc143-mt.lib", "zlibstatic.lib"],
     visibility = ["//visibility:public"],
