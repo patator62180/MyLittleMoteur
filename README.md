@@ -1,11 +1,11 @@
 ## How to debug
 
-# Requirements
+### Requirements
 
 * Install [CodeLLDB extension](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)
 * [Enable Developer mode on Windows](https://learn.microsoft.com/en-us/gaming/game-bar/guide/developer-mode)
 
-# Fix sourcemaps for breakpoints
+### Fix sourcemaps for breakpoints
 
 * Run the engine once using F5
 * Open the Debug Console in VSCode
