@@ -4,8 +4,6 @@
 
 class Camera {
 public:
-	Camera();
-
 	glm::vec3 Position;
 
 	float GetPitch() const;
@@ -21,7 +19,11 @@ public:
 	void ProcessInput(GLFWwindow* window, float deltaTime);
 	void ProcessMouseMovement(float xoffset, float yoffset);
 	void ProcessMouseScroll(float yoffset);
+
+	static Camera& GetInstance();
 private:
+	Camera();
+
 	const float cameraSpeed = 5.0f;
 	const float mouseSensitivity = 0.1f;
 	const float minZoom = 1.0f;

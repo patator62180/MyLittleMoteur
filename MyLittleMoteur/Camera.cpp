@@ -14,6 +14,12 @@ Camera::Camera()
 	zoom = 45;
 }
 
+Camera& Camera::GetInstance()
+{
+	static Camera instance;
+	return instance;
+}
+
 float Camera::GetPitch() const
 {
 	return pitch;

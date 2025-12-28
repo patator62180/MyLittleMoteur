@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Shader.h"
 #include "Camera.h"
+#include "Cube.h"
 #include "stb_image.h"
 #include "Mesh.h"
 #include "Model.h"
@@ -17,7 +18,6 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-Camera camera;
 bool firstMouse = true;
 float lastX;
 float lastY;
@@ -107,11 +107,13 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     lastX = xpos;
     lastY = ypos;
 
+    Camera& camera = Camera::GetInstance();
     camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
+    Camera& camera = Camera::GetInstance();
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
@@ -184,6 +186,8 @@ int main() {
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), SCR_HEIGHT / (float)SCR_WIDTH, 0.1f, 100.0f);
 
+    Camera& camera = Camera::GetInstance();
+
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -244,6 +248,8 @@ int main() {
         cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    Cube cube;
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -273,6 +279,7 @@ int main() {
 
             cubeModel.Draw(lightShader);
             light.Apply(objectShader);
+            cube.Apply(light);
         }
 
         //draw objects
@@ -296,15 +303,7 @@ int main() {
 
 		for (glm::vec3 position : cubePositions)
 		{
-			auto transform = glm::translate(glm::mat4(1.0f), position);
-			transform = glm::scale(transform, glm::vec3(0.5f));
-            objectShader.use();
-			objectShader.setMat4("model", transform);
-            transform = glm::scale(transform, glm::vec3(1.05f));
-            lightShader.use();
-            lightShader.setMat4("model", transform);
-
-			cubeModel.Draw(objectShader);
+            cube.Draw(position);
 		}
 
 
@@ -345,8 +344,7 @@ int main() {
         glBindVertexArray(quadVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-        quadShader.use();
-        quadShader.setInt("screenTexture", 0);
+        quadShader.setInt("screenTexture", GL_TEXTURE0);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         glfwSwapBuffers(window);
