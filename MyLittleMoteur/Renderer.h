@@ -4,6 +4,7 @@
 #include "Cube.h"
 #include "Light.h"
 #include "Camera.h"
+#include "Framebuffer.h"
 
 class Renderer
 {
@@ -14,7 +15,6 @@ public:
 private:
 	void draw_OrthonormalReference(const Model& cubeModel, const Shader& shader);
 
-	unsigned int framebuffer;
 	Shader objectShader;
 	Shader lightShader;
 	Shader quadShader;
@@ -31,8 +31,6 @@ private:
 
 	glm::mat4 trans = glm::mat4(1.0f);
 
-	unsigned int quadVAO;
-
-	unsigned int textureColorbuffer;
+	Framebuffer framebuffer;
 };
 
