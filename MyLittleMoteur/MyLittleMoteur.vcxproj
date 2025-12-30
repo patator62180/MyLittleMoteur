@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)\inlcude;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)thirdParty\imgui\backends;$(SolutionDir)thirdParty\imgui;$(SolutionDir)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,6 +144,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\thirdParty\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\thirdParty\imgui\backends\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\thirdParty\imgui\imgui.cpp" />
+    <ClCompile Include="..\thirdParty\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\thirdParty\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\thirdParty\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\thirdParty\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Framebuffer.cpp" />
@@ -168,10 +175,19 @@
     <ClInclude Include="..\inlcude\glad\glad.h" />
     <ClInclude Include="..\inlcude\Shader.h" />
     <ClInclude Include="..\inlcude\stb_image.h" />
+    <ClInclude Include="..\thirdParty\imgui\backends\imgui_impl_glfw.h" />
+    <ClInclude Include="..\thirdParty\imgui\backends\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\thirdParty\imgui\imconfig.h" />
+    <ClInclude Include="..\thirdParty\imgui\imgui.h" />
+    <ClInclude Include="..\thirdParty\imgui\imgui_internal.h" />
+    <ClInclude Include="..\thirdParty\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\thirdParty\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\thirdParty\imgui\imstb_truetype.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="Framebuffer.h" />
+    <ClInclude Include="ImGuiHandler.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />

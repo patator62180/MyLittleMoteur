@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Constants.h"
 #include "Renderer.h"
+#include "ImGuiHandler.h"
 
 bool firstMouse = true;
 float lastX;
@@ -75,15 +76,18 @@ int main() {
     }
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetCursorPosCallback(window, mouse_callback);
+    //glfwSetScrollCallback(window, scroll_callback);
 
     Renderer renderer;
     renderer.Setup();
 
+    ImGuiHandler::Init(window);
+
     while (!glfwWindowShouldClose(window))
     {
+        ImGuiHandler::BeginLoop();
         float currentTime = (float)glfwGetTime();
         deltaTime = currentTime - lastFrame;
         lastFrame = currentTime;
@@ -92,10 +96,12 @@ int main() {
 
         renderer.Draw();
 
+        ImGuiHandler::EndLoop();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
     glfwTerminate();
+    ImGuiHandler::Shutdown();
     return 0;
 }

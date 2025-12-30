@@ -17,6 +17,9 @@
       <UniqueIdentifier>{05a47d38-8da5-486e-9ec9-1ab76cb71cf0}</UniqueIdentifier>
       <Extensions>vs;fs;</Extensions>
     </Filter>
+    <Filter Include="Imgui Files">
+      <UniqueIdentifier>{dc4ef940-387a-4234-b77d-829195db65d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -51,6 +54,27 @@
     </ClCompile>
     <ClCompile Include="Framebuffer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thirdParty\imgui\imgui.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thirdParty\imgui\imgui_demo.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thirdParty\imgui\imgui_draw.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thirdParty\imgui\imgui_tables.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thirdParty\imgui\imgui_widgets.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thirdParty\imgui\backends\imgui_impl_glfw.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\thirdParty\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>Imgui Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +129,33 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Framebuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thirdParty\imgui\imconfig.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thirdParty\imgui\imgui.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thirdParty\imgui\imgui_internal.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thirdParty\imgui\imstb_rectpack.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thirdParty\imgui\imstb_textedit.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thirdParty\imgui\imstb_truetype.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thirdParty\imgui\backends\imgui_impl_glfw.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\thirdParty\imgui\backends\imgui_impl_opengl3.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
