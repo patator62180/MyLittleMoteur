@@ -22,6 +22,9 @@ public:
 
     void static BeginLoop()
     {
+        if (!overlayEnabled)
+            return;
+        
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -31,6 +34,9 @@ public:
 
     void static EndLoop()
     {
+        if (!overlayEnabled)
+            return;
+
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
@@ -41,4 +47,6 @@ public:
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
     }
+
+    static inline bool overlayEnabled = false;
 };

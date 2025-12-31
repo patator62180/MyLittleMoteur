@@ -25,8 +25,22 @@ void processInput(GLFWwindow* window, Camera& camera)
     camera.ProcessInput(window, deltaTime);
 }
 
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
+    {
+        ImGuiHandler::overlayEnabled = !ImGuiHandler::overlayEnabled;
+        glfwSetInputMode(window, GLFW_CURSOR, ImGuiHandler::overlayEnabled ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+    }
+}
+
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
+    if (ImGuiHandler::overlayEnabled)
+    {
+        return;
+    }
+
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
 
@@ -76,9 +90,10 @@ int main() {
     }
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    //glfwSetCursorPosCallback(window, mouse_callback);
-    //glfwSetScrollCallback(window, scroll_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     Renderer renderer;
     renderer.Setup();
@@ -87,16 +102,16 @@ int main() {
 
     while (!glfwWindowShouldClose(window))
     {
-        ImGuiHandler::BeginLoop();
         float currentTime = (float)glfwGetTime();
         deltaTime = currentTime - lastFrame;
         lastFrame = currentTime;
 
         processInput(window, Camera::GetInstance());
 
+        ImGuiHandler::BeginLoop();
         renderer.Draw();
-
         ImGuiHandler::EndLoop();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
